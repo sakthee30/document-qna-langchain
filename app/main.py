@@ -22,12 +22,38 @@ async def upload_document(file: UploadFile = File(...)):
 
     documents = load_and_split_pdf("temp.pdf")
     vectorstore = create_vector_store(documents)
-
     retriever = vectorstore.as_retriever()
-    rag_chain = build_rag_chain(retriever)
+    
+    rag_chain = build_rag_chain(retriever, use_groq=True)
 
     return {"message": "PDF uploaded and processed successfully."}
 
+
+# @app.post("/ask")
+# def ask(req: AskRequest):
+#     global rag_chain, vectorstore
+
+#     if rag_chain is None:
+#         vectorstore = load_vector_store()
+#         retriever = vectorstore.as_retriever()
+#         rag_chain = build_rag_chain(retriever)
+
+#     history = get_session_history(req.session_id)
+#     history_text = "\n".join(history)
+
+#     full_question = f"""
+#     Previous conversation:
+#     {history_text}
+
+#     Current question:
+#     {req.question}
+#     """
+
+#     answer = rag_chain.invoke(full_question)
+
+#     add_to_history(req.session_id, req.question, answer)
+
+#     return {"answer": answer}
 
 @app.post("/ask")
 def ask(req: AskRequest):
@@ -36,7 +62,7 @@ def ask(req: AskRequest):
     if rag_chain is None:
         vectorstore = load_vector_store()
         retriever = vectorstore.as_retriever()
-        rag_chain = build_rag_chain(retriever)
+        rag_chain = build_rag_chain(retriever, use_groq=True)
 
     history = get_session_history(req.session_id)
     history_text = "\n".join(history)
@@ -50,7 +76,9 @@ def ask(req: AskRequest):
     """
 
     answer = rag_chain.invoke(full_question)
-
     add_to_history(req.session_id, req.question, answer)
 
-    return {"answer": answer}
+    return {
+        "answer": answer,
+        "llm_used": "Groq (llama-3.1-8b-instant)"  
+    }
