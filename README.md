@@ -121,16 +121,6 @@ rag_chain = build_rag_chain(retriever, use_groq=True)
 rag_chain = build_rag_chain(retriever, use_groq=False)
 ```
 
-| | Groq API | Ollama |
-|---|---|---|
-| Model | llama-3.1-8b-instant | LLaMA3 |
-| Speed | ⚡ Very fast | Moderate |
-| Internet | Required | Not required |
-| Cost | Free (with limits) | Free forever |
-| Privacy | Data sent to Groq | 100% local |
-
-> This LLM-agnostic design is powered by LangChain's unified interface — the RAG pipeline stays identical regardless of which LLM backend is used.
-
 ---
 
 ## API Endpoints
